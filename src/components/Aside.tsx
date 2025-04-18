@@ -1,18 +1,55 @@
 import { motion, useAnimate } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import {
+  RefObject,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { IconType } from "react-icons";
 import { FiFolder, FiHome } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { AsideContext } from "../context/aside/AsideContext";
 
-export default function Aside() {
-  const sections: { section: string; icon: IconType; path: string }[] = [
-    { section: "home", path: "/", icon: FiHome },
-    // { section: "about", path: "/", icon: FiUser },
-    { section: "projects", path: "/projects", icon: FiFolder },
-    // { section: "contact", path: "/", icon: AiOutlineContacts },
-  ];
+export default function Aside({
+  projectsRef,
+  heroRef,
+}: {
+  projectsRef: RefObject<HTMLDivElement | null>;
+  heroRef: RefObject<HTMLDivElement | null>;
+}) {
+  const { focus, setFocus } = useContext(AsideContext);
 
-  const [selectedItemIndex, setSelectedItemIndex] = useState<number>(0);
+  const sections: {
+    section: string;
+    icon: IconType;
+    ref: RefObject<HTMLDivElement | null>;
+  }[] = useMemo(
+    () => [
+      { section: "home", icon: FiHome, ref: heroRef },
+      { section: "projects", icon: FiFolder, ref: projectsRef },
+    ],
+    [projectsRef, heroRef]
+  );
+  console.log(focus, "focus");
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const section = sections.find((s) => s.ref.current == entry.target);
+          // console.log(section?.section);
+          if (section) setFocus(section?.section);
+        }
+      },
+      { threshold: 0.3 } // Trigger when 10% visible
+    );
+
+    sections.map((s) => s.ref.current && observer.observe(s.ref.current));
+    return () => observer.disconnect();
+  }, [sections, setFocus]);
+
+  const selectedItemIndex = sections.findIndex((s) => s.section == focus) || 0;
   const [selectedItem, setSelectedItem] = useState<HTMLDivElement | null>(null);
   const asideRef = useRef<HTMLElement>(null);
 
@@ -25,13 +62,21 @@ export default function Aside() {
         <div
           className=" z-20  "
           ref={i == selectedItemIndex ? (el) => setSelectedItem(el) : null}
-          onClick={() => setSelectedItemIndex(i)}
+          onClick={() => {
+            setFocus(s.section);
+            s.ref.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }}
         >
           <AsideItem
             key={s.section}
             Icon={s.icon}
             selected={i == selectedItemIndex}
-            path={s.path}
+            // path={s.path}
+            section={s.section}
+            setFocus={setFocus}
           />
         </div>
       ))}
@@ -43,20 +88,22 @@ export default function Aside() {
 interface AsideItemsProps {
   Icon: IconType;
   selected: boolean;
-  path: string;
+  setFocus: (section: string) => void;
+  section: string;
+  // path: string;
 }
-function AsideItem({ Icon, selected, path }: AsideItemsProps) {
+function AsideItem({ Icon, selected, setFocus, section }: AsideItemsProps) {
   return (
-    <Link
-      to={path}
+    <div
+      onClick={() => setFocus(section)}
       className={` ${
         selected
           ? "  "
-          : " hover:scale-105 transition-transform  cursor-pointer bg-neutral-700"
+          : "hover:scale-105 transition-transform  cursor-pointer bg-neutral-700"
       } !text-white p-2 rounded-full text-2xl z-20 h-11 w-11 flex items-center justify-center   `}
     >
       {<Icon />}
-    </Link>
+    </div>
   );
 }
 

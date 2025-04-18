@@ -1,17 +1,30 @@
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
 import { TypeAnimation } from "react-type-animation";
+import { motion } from "motion/react";
+import { RefObject } from "react";
 
-export default function Hero() {
+export default function Hero({
+  ref,
+}: {
+  ref: RefObject<HTMLDivElement | null>;
+}) {
   return (
-    <section className="    min-h-full  flex lg:flex-row   flex-col   py-[5%] gap-[10%]       ">
-      <div className="mb-8  lg:h-[90%] relative shrink-0  ">
+    <section
+      ref={ref}
+      className="    min-h-screen  flex lg:flex-row   flex-col   py-[5%] gap-[10%]       "
+    >
+      <motion.div
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 100 }}
+        className="mb-8  lg:h-[90%] relative shrink-0  "
+      >
         <img
           className="   mx-auto lg:mx-0 lg:!ml-auto w-[80%] sm:w-[23rem]    lg:h-full !aspect-square object-cover object-top rounded-full
           shadow-[0_0_5px_#fff,inset_0_0_5px_#fff,0_0_25px_#06b6d4,0_0_25px_#06b6d4,0_0_100px_#06b6d4]"
-          src="./hero.webp"
+          src="./me.jpeg"
         />
-      </div>
+      </motion.div>
 
       <div className="   space-y-2  py-[5%]  mx-auto flex flex-col lg:h-[75%]  2xl:h-[90%]  ">
         <h1 className=" font-bold uppercase !text-4xl/8 sm:!text-6xl/12 lg:!text-7xl/14 2xl:!text-8xl/20 tracking-tighter ">

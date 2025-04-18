@@ -1,11 +1,16 @@
 import { FaCode, FaGlobe, FaServer } from "react-icons/fa";
 import { MdOndemandVideo } from "react-icons/md";
 import Project from "../types/project";
+import { motion } from "motion/react";
 
 export default function ProjectCard({ project }: { project: Project }) {
   const { description, img, skills, title } = project;
   return (
-    <div className="rounded-2xl shadow-md grid  lg:grid-cols-[2fr_5fr_1fr] overflow-hidden bg-zinc-900/90 backdrop-blur-sm border border-cyan-500/10  group   hover:shadow-cyan-500 transition-shadow  duration-300   ">
+    <motion.div
+      initial={{ x: -50, opacity: 0 }}
+      whileInView={{ x: 0, opacity: 100 }}
+      className="rounded-2xl shadow-md grid  lg:grid-cols-[2fr_5fr_1fr] overflow-hidden bg-zinc-900/90 backdrop-blur-sm border border-cyan-500/10  group   hover:shadow-cyan-500 transition-shadow  duration-300   "
+    >
       <div className=" group-hover:opacity-100 opacity-60 transition-opacity  overflow-hidden ">
         <img
           className=" max-h-72  h-full w-full  object-cover object-center group-hover:scale-105 transition-transform"
@@ -81,6 +86,6 @@ export default function ProjectCard({ project }: { project: Project }) {
           </a>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
